@@ -1,0 +1,41 @@
+version: "3.7"
+
+services:
+    database:
+        build:
+            context: ./mysql
+            dockerfile: Dockerfile
+        container_name: database
+        environment: 
+            MYSQL_DATABASE: main
+            MYSQL_USER: ${SUPER_USER}
+            MYSQL_PASSWORD: ${SUPER_PASS}
+            MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+        secrets:
+            - source: flask-api-user
+              target: /run/secrets/flask-api-user
+        volumes:
+            - type: bind
+              source: .dbdatadev/
+              target: /var/lib/mysql
+            # - type: bind
+            #   source: ./mysql
+            #   target: /init
+        networks: 
+            - backend-net
+        ports:
+            - ${DB_HOST_PORT}:${DB_CONT_PORT}
+
+secrets:
+    flask-api-user:
+        file: ${FLASK_DB_CONFIG}
+        
+    test-user:
+        file: ${TEST_DB_CONFIG}
+    
+
+networks: 
+    frontend-net:
+        name: ${FRONT_NETWORK_ID}
+    backend-net:
+        name: ${BACK_NETWORK_ID}
