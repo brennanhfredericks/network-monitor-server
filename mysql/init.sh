@@ -67,17 +67,16 @@ function init_from_secrets {
         execute "$(create_user $user $host $pass)"
         # execute mysql statement to grant appropriate priviliages
         execute "$(grant_low_privileges_on_database $DB_PACKETS $user $host)"
+        #remove users configs
+        #rm $f, root getting permission denied errors?
     done
 }
 
-echo $(execute "SHOW DATABASES")
+# show databases
+# echo $(execute "SHOW DATABASES")
 
 #create packets table
 create_database $DB_PACKETS
-
-echo $(execute "SHOW DATABASES")
-
-echo $(execute "SELECT User FROM mysql.user")
 
 #init database users
 init_from_secrets
@@ -85,4 +84,15 @@ init_from_secrets
 # check users
 echo $(execute "SELECT User FROM mysql.user")
 
+# clean enviromental values
+unset "MYSQL_DATABASE"
+unset "MYSQL_USER"
+unset "MYSQL_PASSWORD"
+unset "MYSQL_ROOT_PASSWORD"
+unset "MYSQL_MAJOR"
+unset "MYSQL_VERSION"
 
+
+# delete script
+rm ./init.sh
+exit 0

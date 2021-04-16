@@ -4,9 +4,7 @@ WORKDIR /init
 
 COPY . /init
 
-
-RUN apt-get update -y
-RUN apt-get install nano -y
 RUN chmod +x init.sh
 
+# need to wait for mysql to start up
 #CMD ["./init.sh"]

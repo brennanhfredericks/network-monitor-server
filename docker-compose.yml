@@ -14,6 +14,8 @@ services:
         secrets:
             - source: flask-api-user
               target: /run/secrets/flask-api-user
+            - source: test-user
+              target: /run/secrets/test-user
         volumes:
             - type: bind
               source: .dbdatadev/
