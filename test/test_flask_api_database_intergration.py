@@ -45,20 +45,25 @@ def post_packets_flask_api_and_compare_db():
     - only comparing numbers
     - TODO implement value comparision
     """
+    start_count = count_packets_in_db()
     url = "http://localhost:5050/packets"
     count_inserts = 0
     for packet in get_submitter_service_data():
 
         d = json.dumps(packet).encode("utf-8")
 
-        req = request.Request(url, data=d, method="POST")
+        req = request.Request(
+            url, data=d, headers={"Content-Type": "Application/JSON"}, method="POST"
+        )
 
         resp = request.urlopen(req)
-        print(resp)
-        break
+        assert resp.getcode() == 200
+        count_inserts += 1
+    end_count = count_packets_in_db()
+
+    assert end_count - start_count == count_inserts
 
 
 def test_post_packets_flask_api_and_compare_db():
 
     post_packets_flask_api_and_compare_db()
-    assert False

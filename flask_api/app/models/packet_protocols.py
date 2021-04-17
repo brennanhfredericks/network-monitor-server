@@ -516,7 +516,8 @@ def validate_packet(func):
     @functools.wraps(func)
     def wrapper_validate_protocols(*args, **kwargs):
         data = request.get_json()
-
+        if not isinstance(data, dict):
+            abort(400)
         for proto in data.keys():
             if proto not in packet_protocol_mapper.protocols():
                 abort(400)
