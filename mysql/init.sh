@@ -1,7 +1,5 @@
 #!/bin/bash
 
-DB_PACKETS="packets"
-
 COMMIT="FLUSH PRIVILEGES;"
 
 function execute {
@@ -28,28 +26,15 @@ function create_user {
 }
 
 
-function privileges_type {
-    # arg 1 - priviliage type
-    # arg 2 - database name
-    # arg 3 - username
-    # arg 4 - host
-
-    echo "GRANT $1 ON $2.* TO '$3'@'$4';"
-}
-
 # function to grant low privileges access to database, arguments database name, user, host
 function grant_low_privileges_on_database {
     # arg 1 - database name
     # arg 2 - username
     # arg 3 - host
+    local op="GRANT CREATE,DELETE,INSERT,SELECT,UPDATE,REFERENCES on $1.* TO '$2'@'$3';"
+   
     
-    local op_create=$(privileges_type "CREATE" $1 $2 $3)
-    local op_delete=$(privileges_type "DELETE" $1 $2 $3)
-    local op_insert=$(privileges_type "INSERT" $1 $2 $3)
-    local op_select=$(privileges_type "SELECT" $1 $2 $3)
-    local op_update=$(privileges_type "UPDATE" $1 $2 $3)
-    
-    echo {$op_create,$op_delete,$op_insert,$op_select,$op_update,$COMMIT}
+    echo {$op,$COMMIT}
 }
 
 # function to load /run/secrets *-user
@@ -84,15 +69,6 @@ init_from_secrets
 # check users
 echo $(execute "SELECT User FROM mysql.user")
 
-# clean enviromental values
-unset "MYSQL_DATABASE"
-unset "MYSQL_USER"
-unset "MYSQL_PASSWORD"
-unset "MYSQL_ROOT_PASSWORD"
-unset "MYSQL_MAJOR"
-unset "MYSQL_VERSION"
-
-
 # delete script
-rm ./init.sh
-exit 0
+#rm ./init.sh
+#exit 0

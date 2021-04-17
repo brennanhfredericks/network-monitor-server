@@ -1,16 +1,38 @@
 version: "3.7"
 
 services:
+    flask_api:
+        build:
+            context: ./flask_api
+            dockerfile: Dockerfile
+        container_name: flask_api
+        environment:
+            DB_PACKETS: ${DB_PACKETS}
+            DEBUG: 1
+            DATABASE_URL: database:${DB_CONT_PORT}
+        secrets:
+            - source: flask-api-user
+              target: /run/secrets/flask-api-user
+        expose: 
+            - 5050
+        networks: 
+            - backend-net
+            - frontend-net
+        depends_on: 
+            - database
+        
+
     database:
         build:
             context: ./mysql
             dockerfile: Dockerfile
         container_name: database
         environment: 
-            MYSQL_DATABASE: main
+            MYSQL_DATABASE: ${SUPER_MAIN}
             MYSQL_USER: ${SUPER_USER}
             MYSQL_PASSWORD: ${SUPER_PASS}
             MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+            DB_PACKETS: ${DB_PACKETS}
         secrets:
             - source: flask-api-user
               target: /run/secrets/flask-api-user
@@ -37,7 +59,6 @@ secrets:
     
 
 networks: 
-    frontend-net:
-        name: ${FRONT_NETWORK_ID}
-    backend-net:
-        name: ${BACK_NETWORK_ID}
+    frontend-net: {}
+    backend-net: {}
+    
