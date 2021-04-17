@@ -1,6 +1,6 @@
 FROM nginx
 
-# Remove the default nginx.conf
+# Remove the default nginx.conf for http protocol
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Replace with our own nginx.conf

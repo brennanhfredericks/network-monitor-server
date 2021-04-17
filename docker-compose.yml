@@ -1,6 +1,20 @@
 version: "3.7"
 
 services:
+
+    nginx:
+        build:
+            context: ./nginx
+            dockerfile: Dockerfile
+        container_name: nginx
+        networks: 
+            - frontend-net
+        ports: 
+            - 5050:${UWSGI_FLASK_API_PORT}
+        depends_on: 
+            - flask_api
+            
+
     flask_api:
         build:
             context: ./flask_api
@@ -14,7 +28,7 @@ services:
             - source: flask-api-user
               target: /run/secrets/flask-api-user
         expose: 
-            - 5050
+            - ${UWSGI_FLASK_API_PORT}
         networks: 
             - backend-net
             - frontend-net
@@ -42,9 +56,6 @@ services:
             - type: bind
               source: .dbdatadev/
               target: /var/lib/mysql
-            # - type: bind
-            #   source: ./mysql
-            #   target: /init
         networks: 
             - backend-net
         ports:
