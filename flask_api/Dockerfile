@@ -14,4 +14,4 @@ RUN pip install -r requirements.txt
 #ENV YOURAPPLICATION_SETTINGS=./instance/config.py
 
 # run the command to start uWSGI
-CMD ["python3","run.py"]
+CMD ["uWSGI","app.ini"]
