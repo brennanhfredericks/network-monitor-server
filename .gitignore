@@ -133,3 +133,6 @@ dmypy.json
 .dbdatadev/
 
 test/connection.py
+
+**/*.lsp
+**/*.lp
