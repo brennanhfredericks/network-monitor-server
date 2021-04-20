@@ -8,7 +8,7 @@ consumer of data generate by network-monitor-client
 
 ## Database
 - [x] configured low privilege Mysql user for the application
-
+- [] address table name issue for `i_pv4`, `i_pv6`,`AF__packet` 
 ## Endpoints
 - [x] packets/
   - endpoint used to submit captured packet data
