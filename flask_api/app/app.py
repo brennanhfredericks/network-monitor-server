@@ -14,8 +14,9 @@ def create_database_uri():
         line = fin.read()
 
     user, _, pas = line.split("=")
-    print(uri, pas, user)
+   
     uri = f"mysql+pymysql://{user}:{pas}@{os.getenv('DATABASE_URL')}/{os.getenv('DB_PACKETS')}"
+    print(,uri pas, user)
     return uri
 
 
