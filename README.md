@@ -12,12 +12,11 @@ consumer of data generate by network-monitor-client
 ## Endpoints
 - [x] `/packets`
   - endpoint used to submit captured packet data
-
-- [] `/packets/tables`
+- [x] `/packets/tables`
   - endpoint to retrieve a list of protocols available
-- [] `/packets/tables/<protocol>`
+- [x] `/packets/tables/<protocol>`
   - endpoint to retrieve the number of entries available
-- [] `/packets/tables/all`
+- [x] `/packets/tables/all`
   - endpoint to retrieve the number of entries avaialale for all protocols
 
 
