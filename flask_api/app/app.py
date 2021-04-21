@@ -3,7 +3,7 @@ from flask import Flask
 from .common import db, api
 
 # api resources
-from .resources import Packet_EP
+from .resources import Packet_EP, Packet_DB_EP, Packet_DB_Counts_EP
 
 
 def create_database_uri():
@@ -14,6 +14,7 @@ def create_database_uri():
         line = fin.read()
 
     user, _, pas = line.split("=")
+
     uri = f"mysql+pymysql://{user}:{pas}@{os.getenv('DATABASE_URL')}/{os.getenv('DB_PACKETS')}"
     return uri
 
@@ -39,7 +40,9 @@ db.init_app(app)
 
 
 # api configuration
-api.add_resource(Packet_EP, "/packets")
+api.add_resource(Packet_EP, "/", "/packets")
+api.add_resource(Packet_DB_EP, "/", "/packets/db")
+api.add_resource(Packet_DB_Counts_EP, "/", "/packets/db/<protocol_name>")
 
 # init after adding resources
 api.init_app(app)

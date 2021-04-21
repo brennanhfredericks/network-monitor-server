@@ -1,5 +1,7 @@
+import json
 from flask import request
 from flask_restful import Resource
+
 from ..common import db
 from ..models import validate_packet, Packet, packet_protocol_mapper
 
@@ -34,3 +36,18 @@ class Packet_EP(Resource):
         add_new_packet()
 
         return 200
+
+
+class Packet_DB_EP(Resource):
+    def get(self):
+
+        tables = db.engine.table_names()
+        tables.remove("alembic_version")
+        return {"data": tables}, 200
+
+
+class Packet_DB_Counts_EP(Resource):
+    def get(self, protocol_name):
+
+        res = db.session.execute("SELECT count(id) as entries from packet").scalar()
+        return {"packet": res}, 200

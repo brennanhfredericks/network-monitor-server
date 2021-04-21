@@ -22,11 +22,15 @@ services:
         container_name: flask_api
         environment:
             DB_PACKETS: ${DB_PACKETS}
-            DEBUG: 1
+            DEBUG: "True"
             DATABASE_URL: database:${DB_CONT_PORT}
         secrets:
             - source: flask-api-user
               target: /run/secrets/flask-api-user
+        volumes: 
+            - type: bind
+              source: ./flask_api
+              target: /app
         expose: 
             - ${UWSGI_FLASK_API_PORT}
         networks: 

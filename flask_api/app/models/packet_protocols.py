@@ -36,6 +36,7 @@ class TimestampMixin(object):
 
 
 class Unknown(db.Model):
+    __tablename__ = "unknown"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
     identifier = db.Column(db.Integer, nullable=False)
@@ -63,7 +64,7 @@ packet_protocol_mapper._register(Unknown.__name__, Unknown)
 
 
 class AF_Packet(db.Model):
-
+    __tablename__ = "af_packet"
     id = db.Column(db.BigInteger, primary_key=True)
     ifname = db.Column(db.String(50), nullable=False)
     proto = db.Column(db.Integer, nullable=False)
@@ -96,6 +97,7 @@ packet_protocol_mapper._register(AF_Packet.__name__, AF_Packet)
 
 
 class Packet_802_3(db.Model):
+    __tablename__ = "packet_802_3"
     id = db.Column(db.BigInteger, primary_key=True)
     destination_MAC = db.Column(db.String(50), nullable=False)
     source_MAC = db.Column(db.String(50), nullable=False)
@@ -122,6 +124,7 @@ packet_protocol_mapper._register(Packet_802_3.__name__, Packet_802_3)
 
 
 class Packet_802_2(db.Model):
+    __tablename__ = "packet_802_2"
     id = db.Column(db.BigInteger, primary_key=True)
     DSAP = db.Column(db.String(50), nullable=False)
     SSAP = db.Column(db.String(50), nullable=False)
@@ -149,6 +152,7 @@ packet_protocol_mapper._register(Packet_802_2.__name__, Packet_802_2)
 
 
 class IPv4(db.Model):
+    __tablename__ = "ipv4"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
     IHL = db.Column(db.Integer, nullable=False)
@@ -195,6 +199,7 @@ packet_protocol_mapper._register(IPv4.__name__, IPv4)
 
 
 class IPv6(db.Model):
+    __tablename__ = "ipv6"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
     DS = db.Column(db.Integer, nullable=False)
@@ -234,6 +239,7 @@ packet_protocol_mapper._register(IPv6.__name__, IPv6)
 
 
 class ARP(db.Model):
+    __tablename__ = "arp"
     id = db.Column(db.BigInteger, primary_key=True)
     HTYPE = db.Column(db.Integer, nullable=False)
     PTYPE = db.Column(db.Integer, nullable=False)
@@ -271,6 +277,7 @@ packet_protocol_mapper._register(ARP.__name__, ARP)
 
 
 class CDP(db.Model):
+    __tablename__ = "cdp"
     id = db.Column(db.BigInteger, primary_key=True)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("cdp", lazy=True))
@@ -289,6 +296,7 @@ packet_protocol_mapper._register(CDP.__name__, CDP)
 
 
 class LLDP(db.Model):
+    __tablename__ = "lldp"
     id = db.Column(db.BigInteger, primary_key=True)
     typelengthvalue = db.Column(db.Text, nullable=False)
 
@@ -310,6 +318,7 @@ packet_protocol_mapper._register(LLDP.__name__, LLDP)
 
 
 class IGMP(db.Model):
+    __tablename__ = "igmp"
     id = db.Column(db.BigInteger, primary_key=True)
     type_ = db.Column(db.Integer, nullable=False)
     max_resp_time = db.Column(db.Integer, nullable=False)
@@ -337,6 +346,7 @@ packet_protocol_mapper._register(IGMP.__name__, IGMP)
 
 
 class ICMPv6(db.Model):
+    __tablename__ = "icmpv6"
     id = db.Column(db.BigInteger, primary_key=True)
     type_ = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
@@ -364,6 +374,7 @@ packet_protocol_mapper._register(ICMPv6.__name__, ICMPv6)
 
 
 class ICMP(db.Model):
+    __tablename__ = "icmp"
     id = db.Column(db.BigInteger, primary_key=True)
     type_ = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
@@ -391,6 +402,7 @@ packet_protocol_mapper._register(ICMP.__name__, ICMP)
 
 
 class TCP(db.Model):
+    __tablename__ = "tcp"
     id = db.Column(db.BigInteger, primary_key=True)
     source_port = db.Column(db.Integer, nullable=False)
     destination_port = db.Column(db.Integer, nullable=False)
@@ -407,7 +419,7 @@ class TCP(db.Model):
     options = db.Column(db.Text, nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
-    packet = db.relationship("Packet", backref=db.backref("TCP", lazy=True))
+    packet = db.relationship("Packet", backref=db.backref("tcp", lazy=True))
 
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
@@ -434,6 +446,7 @@ packet_protocol_mapper._register(TCP.__name__, TCP)
 
 
 class UDP(db.Model):
+    __tablename__ = "udp"
     id = db.Column(db.BigInteger, primary_key=True)
     source_port = db.Column(db.Integer, nullable=False)
     destination_port = db.Column(db.Integer, nullable=False)
@@ -441,7 +454,7 @@ class UDP(db.Model):
     checksum = db.Column(db.Integer, nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
-    packet = db.relationship("Packet", backref=db.backref("UDP", lazy=True))
+    packet = db.relationship("Packet", backref=db.backref("udp", lazy=True))
 
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
@@ -462,10 +475,11 @@ packet_protocol_mapper._register(UDP.__name__, UDP)
 
 
 class LSAP_one(db.Model):
+    __tablename__ = "lsap_one"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
-    packet = db.relationship("Packet", backref=db.backref("LSAP_one", lazy=True))
+    packet = db.relationship("Packet", backref=db.backref("lsap_one", lazy=True))
 
     def __repr__(self):
         return f"<LSAP_one > <message {self.message}>"
@@ -483,11 +497,12 @@ packet_protocol_mapper._register(LSAP_one.__name__, LSAP_one)
 
 
 class SNAP_ext(db.Model):
+    __tablename__ = "snap_ext"
     id = db.Column(db.BigInteger, primary_key=True)
     OUI = db.Column(db.Integer, nullable=False)
     protocol_id = db.Column(db.Integer, nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
-    packet = db.relationship("Packet", backref=db.backref("SNAP_ext", lazy=True))
+    packet = db.relationship("Packet", backref=db.backref("snap_ext", lazy=True))
 
     def __repr__(self):
         return f"<OUI {self.OUI}> <protocol_id {self.protocol_id}>"
@@ -506,6 +521,7 @@ packet_protocol_mapper._register(SNAP_ext.__name__, SNAP_ext)
 
 
 class Packet(db.Model):
+    __tablename__ = "packet"
     id = db.Column(db.BigInteger, primary_key=True)
 
     def __repr__(self):

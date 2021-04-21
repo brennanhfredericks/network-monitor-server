@@ -6,12 +6,9 @@ WORKDIR /app
 
 # Copy the current directory
 COPY . /app
-
+ENV DEBUG=true
 # install python package
 RUN pip install -r requirements.txt
-
-# set flask config
-#ENV YOURAPPLICATION_SETTINGS=./instance/config.py
 
 # run the command to start uWSGI
 CMD ["uwsgi","app.ini"]

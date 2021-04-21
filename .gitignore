@@ -136,3 +136,5 @@ test/connection.py
 
 **/*.lsp
 **/*.lp
+.vscode
+test/config.py
