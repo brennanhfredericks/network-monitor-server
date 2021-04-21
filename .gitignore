@@ -138,3 +138,4 @@ test/connection.py
 **/*.lp
 .vscode
 test/config.py
+flask_api/migrations/*
