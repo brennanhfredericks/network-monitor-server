@@ -13,10 +13,9 @@ def create_database_uri():
     with open(os.path.join("/run/secrets/", f), "r") as fin:
         line = fin.read()
 
-    user, _, pas = line.split("=")
+    user, _, pas = line.strip().split("=")
 
     uri = f"mysql+pymysql://{user}:{pas}@{os.getenv('DATABASE_URL')}/{os.getenv('DB_PACKETS')}"
-    print(uri, pas, user)
     return uri
 
 
