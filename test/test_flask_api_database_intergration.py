@@ -62,7 +62,7 @@ def post_packets_flask_api_and_compare_db():
 
         assert resp.getcode() == 200
         count_inserts += 1
-        break
+
     end_count = count_packets_in_db()
 
     assert end_count - start_count == count_inserts

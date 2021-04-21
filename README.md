@@ -8,13 +8,18 @@ consumer of data generate by network-monitor-client
 
 ## Database
 - [x] configured low privilege Mysql user for the application
-- [] address table name issue for `i_pv4`, `i_pv6`,`AF__packet` 
+- [x] address table name issue for `i_pv4`, `i_pv6`,`AF__packet` 
 ## Endpoints
-- [x] packets/
+- [x] `/packets`
   - endpoint used to submit captured packet data
 
-- [] packets_stats/
-  - endpoint used to report on the number of packets in the database (and tables)
+- [] `/packets/tables`
+  - endpoint to retrieve a list of protocols available
+- [] `/packets/tables/<protocol>`
+  - endpoint to retrieve the number of entries available
+- [] `/packets/tables/all`
+  - endpoint to retrieve the number of entries avaialale for all protocols
+
 
 # Nginx
 ## Reverse proxy
@@ -25,6 +30,7 @@ consumer of data generate by network-monitor-client
       - nothing implemented yet
     - [x] `/packets` 
       - forwarding request to flask_api uwsgi
+
 
 # Mysql
 

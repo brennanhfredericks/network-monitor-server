@@ -1,5 +1,5 @@
 import json
-from flask import request
+from flask import request, abort
 from flask_restful import Resource
 
 from ..common import db
@@ -38,16 +38,37 @@ class Packet_EP(Resource):
         return 200
 
 
-class Packet_DB_EP(Resource):
+class Packet_Table_EP(Resource):
     def get(self):
 
         tables = db.engine.table_names()
         tables.remove("alembic_version")
-        return {"data": tables}, 200
+        return {"protocols": tables}, 200
 
 
-class Packet_DB_Counts_EP(Resource):
+class Packet_Table_Counts_EP(Resource):
     def get(self, protocol_name):
+        protocol_name = protocol_name.lower()
+        valid_names = db.engine.table_names()
+        valid_names.remove("alembic_version")
 
-        res = db.session.execute("SELECT count(id) as entries from packet").scalar()
-        return {"packet": res}, 200
+        if protocol_name == "all":
+            try:
+                res = {
+                    v: db.session.execute(
+                        f"SELECT count(id) as entries from {v}"
+                    ).scalar()
+                    for v in valid_names
+                }
+            except Exception:
+                abort(400)
+            else:
+                return res, 200
+        elif protocol_name not in valid_names:
+            abort(400)
+
+        res = db.session.execute(
+            f"SELECT count(id) as entries from {protocol_name}"
+        ).scalar()
+
+        return {protocol_name: res}, 200
