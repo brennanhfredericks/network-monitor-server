@@ -58,7 +58,7 @@ services:
               target: /run/secrets/test-user
         volumes:
             - type: bind
-              source: .dbdatadev/
+              source: ${DATABASE_PERSISTENCE}
               target: /var/lib/mysql
         networks: 
             - backend-net

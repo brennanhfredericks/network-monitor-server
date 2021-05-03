@@ -6,7 +6,7 @@ WORKDIR /app
 
 # Copy the current directory
 COPY . /app
-ENV DEBUG=true
+#ENV DEBUG=true
 # install python package
 RUN pip install -r requirements.txt
 
