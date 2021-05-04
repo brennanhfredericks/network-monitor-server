@@ -83,12 +83,12 @@ class AF_Packet(db.Model):
     def to_dict(self):
 
         return {
-            id: self.id,
-            ifname: self.ifname,
-            proto: self.proto,
-            pkttype: self.pkttype,
-            hatype: self.hatype,
-            hwaddr: self.hwaddr,
+            "id": self.id,
+            "ifname": self.ifname,
+            "proto": self.proto,
+            "pkttype": self.pkttype,
+            "hatype": self.hatype,
+            "hwaddr": self.hwaddr,
         }
 
     @classmethod

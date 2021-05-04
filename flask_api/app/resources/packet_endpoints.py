@@ -109,6 +109,7 @@ class Packet_Table_Views_EP(Resource):
         proto_obj = packet_protocol_mapper.get_instance(protoname)
 
         # query latest
-        res = proto_obj.query.limit(5).all()
+        res = proto_obj.query.limit(limit).all()
+        res = {"view": list(map(lambda x: x.to_dict(), res))}
 
-        return "sd", 200
+        return json.dumps(res), 200
