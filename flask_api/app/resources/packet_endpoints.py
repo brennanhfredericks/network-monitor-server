@@ -105,4 +105,10 @@ class Packet_Table_Views_EP(Resource):
         if protoname not in valid_protocol_names():
             abort(status=400, message="not a valid protocolname")
 
-        return limit, 200
+        # get object
+        proto_obj = packet_protocol_mapper.get_instance(protoname)
+
+        # query latest
+        res = proto_obj.query.limit(5).all()
+
+        return "sd", 200

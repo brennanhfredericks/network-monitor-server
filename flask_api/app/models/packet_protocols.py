@@ -17,10 +17,10 @@ class Packet_Protocol_Mapper(object):
         assert isinstance(k, str), "key has to be a str"
         assert issubclass(v, db.Model)
 
-        self.__mapper[k] = v
+        self.__mapper[k.lower()] = v
 
     def get_instance(self, proto):
-        return self.__mapper[proto]
+        return self.__mapper[proto.lower()]
 
     def protocols(self):
         return list(self.__mapper.keys())
@@ -78,7 +78,18 @@ class AF_Packet(db.Model):
     )
 
     def __repr__(self):
-        return f"<interface name {self.interfacename}> <protocol {self.protocol}> <packet type{self.packettype}>"
+        return f"<interface name {self.ifname}> <protocol {self.proto}> <packet type{self.pkttype}>"
+
+    def to_dict(self):
+
+        return {
+            id: self.id,
+            ifname: self.ifname,
+            proto: self.proto,
+            pkttype: self.pkttype,
+            hatype: self.hatype,
+            hwaddr: self.hwaddr,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -110,6 +121,14 @@ class Packet_802_3(db.Model):
     def __repr__(self):
         return f"<destination_MAC {self.destination_MAC}> <source_MAC {self.source_MAC}> <ethertype {self.ethertype}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "destination_MAC": self.destination_MAC,
+            "source_MAC": self.source_MAC,
+            "ethertype": self.ethertype,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -136,6 +155,14 @@ class Packet_802_2(db.Model):
 
     def __repr__(self):
         return f"<DSAP {self.DSAP}> <SSAP {self.SSAP}> <control {self.control}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "DSAP": self.DSAP,
+            "SSAP": self.SSAP,
+            "control": self.control,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -174,6 +201,24 @@ class IPv4(db.Model):
 
     def __repr__(self):
         return f"<source address {self.source_address}> <destination address {self.destination_address}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "version": self.version,
+            "IHL": self.IHL,
+            "DSCP": self.DSCP,
+            "ECN": self.ECN,
+            "total_length": self.total_length,
+            "identification": self.identification,
+            "flags": self.flags,
+            "fragment_offset": self.fragment_offset,
+            "TTL": self.TTL,
+            "header_checksum": self.header_checksum,
+            "source_address": self.source_address,
+            "destination_address": self.destination_address,
+            "options": self.options,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -218,6 +263,21 @@ class IPv6(db.Model):
     def __repr__(self):
         return f"<source address {self.source_address}> <destination address {self.destination_address}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "version": self.version,
+            "DS": self.DS,
+            "ECN": self.ECN,
+            "flow_label": self.flow_label,
+            "payload_length": self.payload_length,
+            "next_header": self.next_header,
+            "hop_limit": self.hop_limit,
+            "source_address": self.source_address,
+            "destination_address": self.destination_address,
+            "ext_headers": self.ext_headers,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -257,6 +317,20 @@ class ARP(db.Model):
     def __repr__(self):
         return f"<HTYPE {self.HTYPE}> <PTYPE {self.PTYPE}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "HTYPE": self.HTYPE,
+            "PTYPE": self.PTYPE,
+            "HLEN": self.HLEN,
+            "PLEN": self.PLEN,
+            "operation": self.operation,
+            "SHA": self.SHA,
+            "SPA": self.SPA,
+            "THA": self.THA,
+            "TPA": self.TPA,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -285,6 +359,11 @@ class CDP(db.Model):
     def __repr__(self):
         return f"<CDP>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -305,6 +384,12 @@ class LLDP(db.Model):
 
     def __repr__(self):
         return f"<typelengthvalue >"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "typelengthvalue": self.typelengthvalue,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -330,6 +415,15 @@ class IGMP(db.Model):
 
     def __repr__(self):
         return f"<type {self.type_}> <group address {self.group_address}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type_": self.type_,
+            "max_resp_time": self.max_resp_time,
+            "checksum": self.checksum,
+            "group_address": self.group_address,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -359,6 +453,15 @@ class ICMPv6(db.Model):
     def __repr__(self):
         return f"<type {self.type_}> <message {self.message}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type_": self.type_,
+            "code": self.code,
+            "checksum": self.checksum,
+            "message": self.message,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -386,6 +489,15 @@ class ICMP(db.Model):
 
     def __repr__(self):
         return f"<type {self.type_}> <message {self.message}>"
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "type_": self.type_,
+            "code": self.code,
+            "checksum": self.checksum,
+            "message": self.message,
+        }
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -424,6 +536,22 @@ class TCP(db.Model):
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "source_port": source_port,
+            "destination_port": self.destination_port,
+            "sequence_number": self.sequence_number,
+            "acknowledgment_number": self.acknowledgment_number,
+            "data_offset": self.data_offset,
+            "reserved": self.reserved,
+            "flags": self.flags,
+            "window_size": self.window_size,
+            "checksum": self.checksum,
+            "urgent_pointer": self.urgent_pointer,
+            "options": self.options,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
@@ -459,6 +587,15 @@ class UDP(db.Model):
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "source_port": self.source_port,
+            "destination_port": self.destination_port,
+            "legnth": self.length,
+            "checksum": self.checksum,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
 
@@ -484,6 +621,12 @@ class LSAP_one(db.Model):
     def __repr__(self):
         return f"<LSAP_one > <message {self.message}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "message": self.message,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
 
@@ -507,6 +650,13 @@ class SNAP_ext(db.Model):
     def __repr__(self):
         return f"<OUI {self.OUI}> <protocol_id {self.protocol_id}>"
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "OUI": self.OUI,
+            "protocol_id": self.protocol_id,
+        }
+
     @classmethod
     def from_dict(cls, data, packet):
 
@@ -523,6 +673,11 @@ packet_protocol_mapper._register(SNAP_ext.__name__, SNAP_ext)
 class Packet(db.Model):
     __tablename__ = "packet"
     id = db.Column(db.BigInteger, primary_key=True)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+        }
 
     def __repr__(self):
         return f"<id {self.id}>"
