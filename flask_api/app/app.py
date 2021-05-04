@@ -3,7 +3,12 @@ from flask import Flask
 from .common import db, api
 
 # api resources
-from .resources import Packet_EP, Packet_Table_EP, Packet_Table_Counts_EP
+from .resources import (
+    Packet_EP,
+    Packet_Table_EP,
+    Packet_Table_Counts_EP,
+    Packet_Table_Views_EP,
+)
 
 
 def create_database_uri():
@@ -43,6 +48,7 @@ db.init_app(app)
 api.add_resource(Packet_EP, "/", "/packets")
 api.add_resource(Packet_Table_EP, "/", "/packets/tables")
 api.add_resource(Packet_Table_Counts_EP, "/", "/packets/tables/<protocol_name>")
+api.add_resource(Packet_Table_Views_EP, "/", "/packets/tables/views")
 
 # init after adding resources
 api.init_app(app)

@@ -36,6 +36,7 @@ services:
         networks: 
             - backend-net
             - frontend-net
+        restart: on-failure
         depends_on: 
             - database
         

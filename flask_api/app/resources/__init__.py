@@ -1,1 +1,6 @@
-from .packet_endpoints import Packet_EP, Packet_Table_EP, Packet_Table_Counts_EP
+from .packet_endpoints import (
+    Packet_EP,
+    Packet_Table_EP,
+    Packet_Table_Counts_EP,
+    Packet_Table_Views_EP,
+)

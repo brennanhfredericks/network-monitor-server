@@ -1,6 +1,7 @@
 import json
 from flask import request, abort
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
+from functools import lru_cache
 
 from ..common import db
 from ..models import validate_packet, Packet, packet_protocol_mapper
@@ -46,11 +47,17 @@ class Packet_Table_EP(Resource):
         return {"protocols": tables}, 200
 
 
+@lru_cache
+def valid_protocol_names():
+    valid_names = db.engine.table_names()
+    valid_names.remove("alembic_version")
+
+    return valid_names
+
+
 class Packet_Table_Counts_EP(Resource):
     def get(self, protocol_name):
         protocol_name = protocol_name.lower()
-        valid_names = db.engine.table_names()
-        valid_names.remove("alembic_version")
 
         if protocol_name == "all":
             try:
@@ -58,17 +65,44 @@ class Packet_Table_Counts_EP(Resource):
                     v: db.session.execute(
                         f"SELECT count(id) as entries from {v}"
                     ).scalar()
-                    for v in valid_names
+                    for v in valid_protocol_names()
                 }
             except Exception:
-                abort(400)
+                abort(status=400, message="Oops!")
             else:
                 return res, 200
-        elif protocol_name not in valid_names:
-            abort(400)
+        elif protocol_name not in valid_protocol_names():
+            abort(status=400, message="not a valid protocolname")
 
         res = db.session.execute(
             f"SELECT count(id) as entries from {protocol_name}"
         ).scalar()
 
         return {protocol_name: res}, 200
+
+
+class Packet_Table_Views_EP(Resource):
+    parser = reqparse.RequestParser()
+
+    def __init__(self):
+        super().__init__()
+        self.parser.add_argument("protocolname", type=str, help="Specify protocol name")
+        self.parser.add_argument(
+            "limit", type=int, help="number of entries to return max (100)"
+        )
+
+    def get(self):
+        args = self.parser.parse_args(strict=True)
+
+        protoname = args.get("protocolname", None)
+        limit = args.get("limit", None)
+
+        if protoname is None or limit is None:
+            abort(status=400, message="missing parameter values cannot be None")
+        protoname = protoname.lower()
+        limit = min(limit, 100)
+
+        if protoname not in valid_protocol_names():
+            abort(status=400, message="not a valid protocolname")
+
+        return limit, 200
