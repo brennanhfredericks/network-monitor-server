@@ -1,0 +1,63 @@
+version: "3.7"
+
+services:
+    flask_api:
+        build:
+            context: ./flask_api
+            dockerfile: DockerfileDev
+        container_name: flask_api
+        environment:
+            DB_PACKETS: ${DB_PACKETS}
+            DEBUG: "True"
+            DATABASE_URL: database:${DB_CONT_PORT}
+        secrets:
+            - source: flask-api-user
+              target: /run/secrets/flask-api-user
+        volumes: 
+            - type: bind
+              source: ./flask_api
+              target: /app
+        networks: 
+            - backend-net
+        ports: 
+            - 5000:5000
+        depends_on: 
+            - database
+        
+
+    database:
+        build:
+            context: ./mysql
+            dockerfile: Dockerfile
+        container_name: database
+        environment: 
+            MYSQL_DATABASE: ${SUPER_MAIN}
+            MYSQL_USER: ${SUPER_USER}
+            MYSQL_PASSWORD: ${SUPER_PASS}
+            MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+            DB_PACKETS: ${DB_PACKETS}
+        secrets:
+            - source: flask-api-user
+              target: /run/secrets/flask-api-user
+            - source: test-user
+              target: /run/secrets/test-user
+        volumes:
+            - type: bind
+              source: ${DATABASE_PERSISTENCE}
+              target: /var/lib/mysql
+        networks: 
+            - backend-net
+        ports:
+            - ${DB_HOST_PORT}:${DB_CONT_PORT}
+
+secrets:
+    flask-api-user:
+        file: ${FLASK_DB_CONFIG}
+        
+    test-user:
+        file: ${TEST_DB_CONFIG}
+    
+
+networks: 
+    backend-net: {}
+    

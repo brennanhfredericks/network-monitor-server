@@ -16,6 +16,7 @@ consumer of data generate by network-monitor-client
   - endpoint to retrieve a list of protocols available
 - [x] `/packets/tables/<protocol>`
   - endpoint to retrieve the number of entries available
+- [] `/packets/tables/view?ProtocolName=af_packet;Limit=100;`
 - [x] `/packets/tables/all`
   - endpoint to retrieve the number of entries avaialale for all protocols
 
