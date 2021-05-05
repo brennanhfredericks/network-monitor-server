@@ -687,11 +687,13 @@ def validate_packet(func):
     @functools.wraps(func)
     def wrapper_validate_protocols(*args, **kwargs):
         data = request.get_json()
+
         if not isinstance(data, dict):
-            abort(400)
+            abort(status=400)
         for proto in data.keys():
-            if proto not in packet_protocol_mapper.protocols():
-                abort(400)
+            # the records are lower cased
+            if proto.lower() not in packet_protocol_mapper.protocols():
+                abort(status=400)
 
         result = func(*args, **kwargs)
         return result

@@ -9,8 +9,7 @@ from ..models import validate_packet, Packet, packet_protocol_mapper
 
 def add_new_packet():
     # create class instances of all the present keys
-    data = data = request.get_json()
-
+    data = request.get_json()
     packet = Packet()
 
     for proto_name, proto_attrs in data.items():
@@ -34,6 +33,7 @@ class Packet_EP(Resource):
     def post(self):
 
         # insert into database
+
         add_new_packet()
 
         return 200
