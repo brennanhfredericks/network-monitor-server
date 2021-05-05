@@ -1,6 +1,6 @@
 import json
-from flask import request, abort
-from flask_restful import Resource, reqparse
+from flask import request, abort, make_response
+from flask_restful import Resource, reqparse, marshal, fields
 from functools import lru_cache
 
 from ..common import db
@@ -101,6 +101,7 @@ class Packet_Table_Views_EP(Resource):
             abort(status=400, message="missing parameter values cannot be None")
         protoname = protoname.lower()
         limit = min(limit, 100)
+        limit = max(5, limit)
 
         if protoname not in valid_protocol_names():
             abort(status=400, message="not a valid protocolname")
@@ -110,6 +111,7 @@ class Packet_Table_Views_EP(Resource):
 
         # query latest
         res = proto_obj.query.limit(limit).all()
-        res = {"view": list(map(lambda x: x.to_dict(), res))}
 
-        return json.dumps(res), 200
+        data = {"view": list(map(lambda x: x.to_dict(), res))}
+
+        return data, 200

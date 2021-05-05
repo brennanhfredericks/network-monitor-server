@@ -2,6 +2,7 @@ from datetime import datetime
 import functools
 import json
 from ..common import db
+from flask_restful import fields, marshal
 from flask import request, abort
 
 
@@ -47,8 +48,22 @@ class Unknown(db.Model):
         "Packet", lazy="select", backref=db.backref("unknown", lazy=True)
     )
 
+    def __init__(self):
+        self._resource_fields = {
+            "id": fields.Integer,
+            "message": fields.String,
+            "identifier": fields.Integer,
+        }
+        super().__init__()
+
     def __repr__(self):
         return f"<message {self.message}> <idemtifier {self.identifier}>"
+
+    def to_dict(self):
+        return marshal(
+            {"id": self.id, "message": self.message, "identifier": self.identifier},
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -77,19 +92,31 @@ class AF_Packet(db.Model):
         "Packet", lazy="select", backref=db.backref("af_packet", lazy=True)
     )
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "ifname": fields.String,
+        "proto": fields.Integer,
+        "pkttype": fields.String,
+        "hatype": fields.Integer,
+        "hwaddr": fields.String,
+    }
+
     def __repr__(self):
         return f"<interface name {self.ifname}> <protocol {self.proto}> <packet type{self.pkttype}>"
 
     def to_dict(self):
 
-        return {
-            "id": self.id,
-            "ifname": self.ifname,
-            "proto": self.proto,
-            "pkttype": self.pkttype,
-            "hatype": self.hatype,
-            "hwaddr": self.hwaddr,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "ifname": self.ifname,
+                "proto": self.proto,
+                "pkttype": self.pkttype,
+                "hatype": self.hatype,
+                "hwaddr": self.hwaddr,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -118,16 +145,26 @@ class Packet_802_3(db.Model):
 
     packet = db.relationship("Packet", backref=db.backref("packet_802_3", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "destination_MAC": fields.String,
+        "source_MAC": fields.String,
+        "ethertype": fields.Integer,
+    }
+
     def __repr__(self):
         return f"<destination_MAC {self.destination_MAC}> <source_MAC {self.source_MAC}> <ethertype {self.ethertype}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "destination_MAC": self.destination_MAC,
-            "source_MAC": self.source_MAC,
-            "ethertype": self.ethertype,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "destination_MAC": self.destination_MAC,
+                "source_MAC": self.source_MAC,
+                "ethertype": self.ethertype,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -153,16 +190,26 @@ class Packet_802_2(db.Model):
 
     packet = db.relationship("Packet", backref=db.backref("packet_802_2", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "DSAP": fields.String,
+        "SSAP": fields.String,
+        "control": fields.String,
+    }
+
     def __repr__(self):
         return f"<DSAP {self.DSAP}> <SSAP {self.SSAP}> <control {self.control}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "DSAP": self.DSAP,
-            "SSAP": self.SSAP,
-            "control": self.control,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "DSAP": self.DSAP,
+                "SSAP": self.SSAP,
+                "control": self.control,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -199,26 +246,46 @@ class IPv4(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("ipv4", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "version": fields.Integer,
+        "IHL": fields.Integer,
+        "DSCP": fields.Integer,
+        "ECN": fields.Integer,
+        "total_length": fields.Integer,
+        "identification": fields.Integer,
+        "flags": fields.Integer,
+        "fragment_offset": fields.Integer,
+        "TTL": fields.Integer,
+        "header_checksum": fields.Integer,
+        "source_address": fields.String,
+        "destination_address": fields.String,
+        "options": fields.String,
+    }
+
     def __repr__(self):
         return f"<source address {self.source_address}> <destination address {self.destination_address}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "version": self.version,
-            "IHL": self.IHL,
-            "DSCP": self.DSCP,
-            "ECN": self.ECN,
-            "total_length": self.total_length,
-            "identification": self.identification,
-            "flags": self.flags,
-            "fragment_offset": self.fragment_offset,
-            "TTL": self.TTL,
-            "header_checksum": self.header_checksum,
-            "source_address": self.source_address,
-            "destination_address": self.destination_address,
-            "options": self.options,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "version": self.version,
+                "IHL": self.IHL,
+                "DSCP": self.DSCP,
+                "ECN": self.ECN,
+                "total_length": self.total_length,
+                "identification": self.identification,
+                "flags": self.flags,
+                "fragment_offset": self.fragment_offset,
+                "TTL": self.TTL,
+                "header_checksum": self.header_checksum,
+                "source_address": self.source_address,
+                "destination_address": self.destination_address,
+                "options": self.options,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -260,23 +327,40 @@ class IPv6(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("ipv6", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "version": fields.Integer,
+        "DS": fields.Integer,
+        "ECN": fields.Integer,
+        "flow_label": fields.Integer,
+        "payload_length": fields.Integer,
+        "next_header": fields.Integer,
+        "hop_limit": fields.Integer,
+        "source_address": fields.String,
+        "destination_address": fields.String,
+        "ext_headers": fields.String,
+    }
+
     def __repr__(self):
         return f"<source address {self.source_address}> <destination address {self.destination_address}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "version": self.version,
-            "DS": self.DS,
-            "ECN": self.ECN,
-            "flow_label": self.flow_label,
-            "payload_length": self.payload_length,
-            "next_header": self.next_header,
-            "hop_limit": self.hop_limit,
-            "source_address": self.source_address,
-            "destination_address": self.destination_address,
-            "ext_headers": self.ext_headers,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "version": self.version,
+                "DS": self.DS,
+                "ECN": self.ECN,
+                "flow_label": self.flow_label,
+                "payload_length": self.payload_length,
+                "next_header": self.next_header,
+                "hop_limit": self.hop_limit,
+                "source_address": self.source_address,
+                "destination_address": self.destination_address,
+                "ext_headers": self.ext_headers,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -314,22 +398,38 @@ class ARP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("arp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "HTYPE": fields.Integer,
+        "PTYPE": fields.Integer,
+        "HLEN": fields.Integer,
+        "PLEN": fields.Integer,
+        "operation": fields.Integer,
+        "SHA": fields.String,
+        "SPA": fields.String,
+        "THA": fields.String,
+        "TPA": fields.String,
+    }
+
     def __repr__(self):
         return f"<HTYPE {self.HTYPE}> <PTYPE {self.PTYPE}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "HTYPE": self.HTYPE,
-            "PTYPE": self.PTYPE,
-            "HLEN": self.HLEN,
-            "PLEN": self.PLEN,
-            "operation": self.operation,
-            "SHA": self.SHA,
-            "SPA": self.SPA,
-            "THA": self.THA,
-            "TPA": self.TPA,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "HTYPE": self.HTYPE,
+                "PTYPE": self.PTYPE,
+                "HLEN": self.HLEN,
+                "PLEN": self.PLEN,
+                "operation": self.operation,
+                "SHA": self.SHA,
+                "SPA": self.SPA,
+                "THA": self.THA,
+                "TPA": self.TPA,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -356,13 +456,20 @@ class CDP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("cdp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+    }
+
     def __repr__(self):
         return f"<CDP>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-        }
+        return marshal(
+            {
+                "id": self.id,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -382,14 +489,22 @@ class LLDP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("lldp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "typelengthvalue": fields.String,
+    }
+
     def __repr__(self):
         return f"<typelengthvalue >"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "typelengthvalue": self.typelengthvalue,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "typelengthvalue": self.typelengthvalue,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -413,17 +528,28 @@ class IGMP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("igmp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "type": fields.Integer,
+        "max_resp_time": fields.Integer,
+        "checksum": fields.Integer,
+        "group_address": fields.String,
+    }
+
     def __repr__(self):
         return f"<type {self.type_}> <group address {self.group_address}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "type_": self.type_,
-            "max_resp_time": self.max_resp_time,
-            "checksum": self.checksum,
-            "group_address": self.group_address,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "type": self.type_,
+                "max_resp_time": self.max_resp_time,
+                "checksum": self.checksum,
+                "group_address": self.group_address,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -450,17 +576,28 @@ class ICMPv6(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("icmpv6", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "type": fields.Integer,
+        "code": fields.Integer,
+        "checksum": fields.Integer,
+        "message": fields.String,
+    }
+
     def __repr__(self):
         return f"<type {self.type_}> <message {self.message}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "type_": self.type_,
-            "code": self.code,
-            "checksum": self.checksum,
-            "message": self.message,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "type": self.type_,
+                "code": self.code,
+                "checksum": self.checksum,
+                "message": self.message,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -487,17 +624,28 @@ class ICMP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("icmp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "type": fields.Integer,
+        "code": fields.Integer,
+        "checksum": fields.Integer,
+        "message": fields.String,
+    }
+
     def __repr__(self):
         return f"<type {self.type_}> <message {self.message}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "type_": self.type_,
-            "code": self.code,
-            "checksum": self.checksum,
-            "message": self.message,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "type": self.type_,
+                "code": self.code,
+                "checksum": self.checksum,
+                "message": self.message,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -533,24 +681,42 @@ class TCP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("tcp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "source_port": fields.Integer,
+        "destination_port": fields.Integer,
+        "sequence_number": fields.Integer,
+        "acknowledgment_number": fields.Integer,
+        "data_offset": fields.Integer,
+        "reserved": fields.Integer,
+        "flags": fields.String,
+        "window_size": fields.Integer,
+        "checksum": fields.Integer,
+        "urgent_pointer": fields.Integer,
+        "options": fields.String,
+    }
+
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "source_port": source_port,
-            "destination_port": self.destination_port,
-            "sequence_number": self.sequence_number,
-            "acknowledgment_number": self.acknowledgment_number,
-            "data_offset": self.data_offset,
-            "reserved": self.reserved,
-            "flags": self.flags,
-            "window_size": self.window_size,
-            "checksum": self.checksum,
-            "urgent_pointer": self.urgent_pointer,
-            "options": self.options,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "source_port": self.source_port,
+                "destination_port": self.destination_port,
+                "sequence_number": self.sequence_number,
+                "acknowledgment_number": self.acknowledgment_number,
+                "data_offset": self.data_offset,
+                "reserved": self.reserved,
+                "flags": self.flags,
+                "window_size": self.window_size,
+                "checksum": self.checksum,
+                "urgent_pointer": self.urgent_pointer,
+                "options": self.options,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -584,17 +750,28 @@ class UDP(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("udp", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "source_port": fields.Integer,
+        "destination_port": fields.Integer,
+        "legnth": fields.Integer,
+        "checksum": fields.Integer,
+    }
+
     def __repr__(self):
         return f"<source port {self.source_port}> <destination port {self.destination_port}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "source_port": self.source_port,
-            "destination_port": self.destination_port,
-            "legnth": self.length,
-            "checksum": self.checksum,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "source_port": self.source_port,
+                "destination_port": self.destination_port,
+                "legnth": self.length,
+                "checksum": self.checksum,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -618,14 +795,22 @@ class LSAP_one(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("lsap_one", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "message": fields.String,
+    }
+
     def __repr__(self):
         return f"<LSAP_one > <message {self.message}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "message": self.message,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "message": self.message,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -647,15 +832,24 @@ class SNAP_ext(db.Model):
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("snap_ext", lazy=True))
 
+    _resource_fields = {
+        "id": fields.Integer,
+        "OUI": fields.Integer,
+        "protocol_id": fields.Integer,
+    }
+
     def __repr__(self):
         return f"<OUI {self.OUI}> <protocol_id {self.protocol_id}>"
 
     def to_dict(self):
-        return {
-            "id": self.id,
-            "OUI": self.OUI,
-            "protocol_id": self.protocol_id,
-        }
+        return marshal(
+            {
+                "id": self.id,
+                "OUI": self.OUI,
+                "protocol_id": self.protocol_id,
+            },
+            self._resource_fields,
+        )
 
     @classmethod
     def from_dict(cls, data, packet):
@@ -673,14 +867,23 @@ packet_protocol_mapper._register(SNAP_ext.__name__, SNAP_ext)
 class Packet(db.Model):
     __tablename__ = "packet"
     id = db.Column(db.BigInteger, primary_key=True)
+    _resource_fields = {
+        "id": fields.Integer,
+    }
 
     def to_dict(self):
-        return {
-            "id": self.id,
-        }
+        return marshal(
+            {
+                "id": self.id,
+            },
+            self._resource_fields,
+        )
 
     def __repr__(self):
         return f"<id {self.id}>"
+
+
+packet_protocol_mapper._register(Packet.__name__, Packet)
 
 
 def validate_packet(func):
