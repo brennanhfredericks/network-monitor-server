@@ -11,6 +11,7 @@ services:
             - frontend-net
         ports: 
             - 5050:${UWSGI_FLASK_API_PORT}
+        restart: on-failure
         depends_on: 
             - flask_api
             
@@ -22,15 +23,10 @@ services:
         container_name: flask_api
         environment:
             DB_PACKETS: ${DB_PACKETS}
-            DEBUG: "True"
             DATABASE_URL: database:${DB_CONT_PORT}
         secrets:
             - source: flask-api-user
               target: /run/secrets/flask-api-user
-        volumes: 
-            - type: bind
-              source: ./flask_api
-              target: /app
         expose: 
             - ${UWSGI_FLASK_API_PORT}
         networks: 
@@ -59,10 +55,11 @@ services:
               target: /run/secrets/test-user
         volumes:
             - type: bind
-              source: ${DATABASE_PERSISTENCE}
+              source: ${DATABASE_PERSISTANCE}
               target: /var/lib/mysql
         networks: 
             - backend-net
+        restart: on-failure
         ports:
             - ${DB_HOST_PORT}:${DB_CONT_PORT}
 
