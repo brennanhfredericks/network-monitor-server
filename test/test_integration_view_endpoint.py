@@ -22,7 +22,7 @@ def packets_tables_all_view_points():
 
     for proto in protonames:
         for limit in limits:
-            print(proto)
+
             req = request.Request(
                 f"{url_local}/packets/tables/views?protocolname={proto}&limit={limit}",
                 data=None,
@@ -34,8 +34,7 @@ def packets_tables_all_view_points():
             assert resp.getcode() == 200
 
             records = json.load(resp)["view"]
-            print(len(records), limit)
-            # print(type(records), limit)
+
             if len(records) == 0:
                 continue
             if limit < 0 or limit > 100:
