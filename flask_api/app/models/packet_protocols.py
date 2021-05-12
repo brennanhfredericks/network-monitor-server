@@ -7,11 +7,12 @@ from flask import request, abort
 
 
 class Packet_Protocol_Mapper(object):
-    """ wrapper function to map dictionary keys to class instances """
+    """wrapper function to map dictionary keys to class instances"""
 
     def __init__(self):
 
-        self.__mapper = {}
+        # info key added here for validation purpose. the info data is extracted and added to Packet Model
+        self.__mapper = {"info": None}
 
     def _register(self, k, v):
 
@@ -37,7 +38,7 @@ class TimestampMixin(object):
 
 
 class Unknown(db.Model):
-    __tablename__ = "unknown"
+    __tablename__ = "Unknown"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
     identifier = db.Column(db.Integer, nullable=False)
@@ -81,11 +82,11 @@ packet_protocol_mapper._register(Unknown.__name__, Unknown)
 class AF_Packet(db.Model):
     __tablename__ = "af_packet"
     id = db.Column(db.BigInteger, primary_key=True)
-    ifname = db.Column(db.String(50), nullable=False)
-    proto = db.Column(db.Integer, nullable=False)
-    pkttype = db.Column(db.String(25), nullable=False)
-    hatype = db.Column(db.Integer, nullable=False)
-    hwaddr = db.Column(db.String(50), nullable=False)
+    interface_name = db.Column(db.String(50), nullable=False)
+    ethernet_protocol_number = db.Column(db.Integer, nullable=False)
+    packet_type = db.Column(db.String(25), nullable=False)
+    arp_hardware_address_type = db.Column(db.Integer, nullable=False)
+    hardware_physical_address = db.Column(db.String(50), nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
 
     packet = db.relationship(
@@ -94,26 +95,26 @@ class AF_Packet(db.Model):
 
     _resource_fields = {
         "id": fields.Integer,
-        "ifname": fields.String,
-        "proto": fields.Integer,
-        "pkttype": fields.String,
-        "hatype": fields.Integer,
-        "hwaddr": fields.String,
+        "interface_name": fields.String,
+        "ethernet_protocol_number": fields.Integer,
+        "packet_type": fields.String,
+        "arp_hardware_address_type": fields.Integer,
+        "hardware_physical_address": fields.String,
     }
 
     def __repr__(self):
-        return f"<interface name {self.ifname}> <protocol {self.proto}> <packet type{self.pkttype}>"
+        return f"<interface name {self.interface_name}> <ethernet protocol number {self.ethernet_protocol_number}> <packet type{self.packet_type}>"
 
     def to_dict(self):
 
         return marshal(
             {
                 "id": self.id,
-                "ifname": self.ifname,
-                "proto": self.proto,
-                "pkttype": self.pkttype,
-                "hatype": self.hatype,
-                "hwaddr": self.hwaddr,
+                "interface_name": self.interface_name,
+                "ethernet_protocol_number": self.ethernet_protocol_number,
+                "packet_type": self.packet_type,
+                "arp_hardware_address_type": self.arp_hardware_address_type,
+                "hardware_physical_address": self.hardware_physical_address,
             },
             self._resource_fields,
         )
@@ -122,11 +123,11 @@ class AF_Packet(db.Model):
     def from_dict(cls, data, packet):
 
         return cls(
-            ifname=data["ifname"],
-            proto=data["proto"],
-            pkttype=data["pkttype"],
-            hatype=data["hatype"],
-            hwaddr=data["hwaddr"],
+            interface_name=data["Interface_Name"],
+            ethernet_protocol_number=data["Ethernet_Protocol_Number"],
+            packet_type=data["Packet_Type"],
+            arp_hardware_address_type=data["Arp_Hardware_Address_Type"],
+            hardware_physical_address=data["Hardware_Physical_Address"],
             packet=packet,
         )
 
@@ -137,8 +138,8 @@ packet_protocol_mapper._register(AF_Packet.__name__, AF_Packet)
 class Packet_802_3(db.Model):
     __tablename__ = "packet_802_3"
     id = db.Column(db.BigInteger, primary_key=True)
-    destination_MAC = db.Column(db.String(50), nullable=False)
-    source_MAC = db.Column(db.String(50), nullable=False)
+    destination_mac = db.Column(db.String(50), nullable=False)
+    source_mac = db.Column(db.String(50), nullable=False)
     ethertype = db.Column(db.Integer, nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
@@ -147,20 +148,20 @@ class Packet_802_3(db.Model):
 
     _resource_fields = {
         "id": fields.Integer,
-        "destination_MAC": fields.String,
-        "source_MAC": fields.String,
+        "destination_mac": fields.String,
+        "source_mac": fields.String,
         "ethertype": fields.Integer,
     }
 
     def __repr__(self):
-        return f"<destination_MAC {self.destination_MAC}> <source_MAC {self.source_MAC}> <ethertype {self.ethertype}>"
+        return f"<destination mac {self.destination_mac}> <source mac {self.source_mac}> <ethertype {self.ethertype}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "destination_MAC": self.destination_MAC,
-                "source_MAC": self.source_MAC,
+                "destination_mac": self.destination_mac,
+                "source_mac": self.source_mac,
                 "ethertype": self.ethertype,
             },
             self._resource_fields,
@@ -169,9 +170,9 @@ class Packet_802_3(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            destination_MAC=data["destination_MAC"],
-            source_MAC=data["source_MAC"],
-            ethertype=data["ethertype"],
+            destination_mac=data["Destination_MAC"],
+            source_mac=data["Source_MAC"],
+            ethertype=data["Ethertype"],
             packet=packet,
         )
 
@@ -182,8 +183,8 @@ packet_protocol_mapper._register(Packet_802_3.__name__, Packet_802_3)
 class Packet_802_2(db.Model):
     __tablename__ = "packet_802_2"
     id = db.Column(db.BigInteger, primary_key=True)
-    DSAP = db.Column(db.String(50), nullable=False)
-    SSAP = db.Column(db.String(50), nullable=False)
+    dsap = db.Column(db.String(50), nullable=False)
+    ssap = db.Column(db.String(50), nullable=False)
     control = db.Column(db.String(50), nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
@@ -192,20 +193,20 @@ class Packet_802_2(db.Model):
 
     _resource_fields = {
         "id": fields.Integer,
-        "DSAP": fields.String,
-        "SSAP": fields.String,
+        "dsap": fields.String,
+        "ssap": fields.String,
         "control": fields.String,
     }
 
     def __repr__(self):
-        return f"<DSAP {self.DSAP}> <SSAP {self.SSAP}> <control {self.control}>"
+        return f"<dsap {self.dsap}> <SSAP {self.ssap}> <control {self.control}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "DSAP": self.DSAP,
-                "SSAP": self.SSAP,
+                "dsap": self.dsap,
+                "ssap": self.ssap,
                 "control": self.control,
             },
             self._resource_fields,
@@ -215,9 +216,9 @@ class Packet_802_2(db.Model):
     def from_dict(cls, data, packet):
 
         return cls(
-            DSAP=data["DSAP"],
-            SSAP=data["SSAP"],
-            control=data["control"],
+            dsap=data["DSAP"],
+            ssap=data["SSAP"],
+            control=data["Control"],
             packet=packet,
         )
 
@@ -229,15 +230,15 @@ class IPv4(db.Model):
     __tablename__ = "ipv4"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
-    IHL = db.Column(db.Integer, nullable=False)
-    DSCP = db.Column(db.Integer, nullable=False)
-    ECN = db.Column(db.Integer, nullable=False)
+    ihl = db.Column(db.Integer, nullable=False)
+    dscp = db.Column(db.Integer, nullable=False)
+    ecn = db.Column(db.Integer, nullable=False)
 
     total_length = db.Column(db.Integer, nullable=False)
     identification = db.Column(db.BigInteger, nullable=False)
     flags = db.Column(db.Integer, nullable=False)
     fragment_offset = db.Column(db.Integer, nullable=False)
-    TTL = db.Column(db.Integer, nullable=False)
+    ttl = db.Column(db.Integer, nullable=False)
     header_checksum = db.Column(db.Integer, nullable=False)
     source_address = db.Column(db.String(40), nullable=False)
     destination_address = db.Column(db.String(40), nullable=False)
@@ -250,13 +251,13 @@ class IPv4(db.Model):
         "id": fields.Integer,
         "version": fields.Integer,
         "IHL": fields.Integer,
-        "DSCP": fields.Integer,
+        "dscp": fields.Integer,
         "ECN": fields.Integer,
         "total_length": fields.Integer,
         "identification": fields.Integer,
         "flags": fields.Integer,
         "fragment_offset": fields.Integer,
-        "TTL": fields.Integer,
+        "ttl": fields.Integer,
         "header_checksum": fields.Integer,
         "source_address": fields.String,
         "destination_address": fields.String,
@@ -271,14 +272,14 @@ class IPv4(db.Model):
             {
                 "id": self.id,
                 "version": self.version,
-                "IHL": self.IHL,
-                "DSCP": self.DSCP,
-                "ECN": self.ECN,
+                "ihl": self.ihl,
+                "dscp": self.dscp,
+                "ecn": self.ecn,
                 "total_length": self.total_length,
                 "identification": self.identification,
                 "flags": self.flags,
                 "fragment_offset": self.fragment_offset,
-                "TTL": self.TTL,
+                "ttl": self.ttl,
                 "header_checksum": self.header_checksum,
                 "source_address": self.source_address,
                 "destination_address": self.destination_address,
@@ -290,19 +291,19 @@ class IPv4(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            version=data["version"],
-            IHL=data["IHL"],
-            DSCP=data["DSCP"],
-            ECN=data["ECN"],
-            total_length=data["total_length"],
-            identification=data["identification"],
-            flags=data["flags"],
-            fragment_offset=data["fragment_offset"],
-            TTL=data["TTL"],
-            header_checksum=data["header_checksum"],
-            source_address=data["source_address"],
-            destination_address=data["destination_address"],
-            options=json.dumps(data["options"]),
+            version=data["Version"],
+            ihl=data["IHL"],
+            dscp=data["DSCP"],
+            ecn=data["ECN"],
+            total_length=data["Total_Length"],
+            identification=data["Identification"],
+            flags=data["Flags"],
+            fragment_offset=data["Fragment_Offset"],
+            ttl=data["TTL"],
+            header_checksum=data["Header_Checksum"],
+            source_address=data["Source_Address"],
+            destination_address=data["Destination_Address"],
+            options=json.dumps(data["Options"]),
             packet=packet,
         )
 
@@ -314,8 +315,8 @@ class IPv6(db.Model):
     __tablename__ = "ipv6"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
-    DS = db.Column(db.Integer, nullable=False)
-    ECN = db.Column(db.Integer, nullable=False)
+    ds = db.Column(db.Integer, nullable=False)
+    ecn = db.Column(db.Integer, nullable=False)
     flow_label = db.Column(db.BigInteger, nullable=False)
     payload_length = db.Column(db.Integer, nullable=False)
     next_header = db.Column(db.Integer, nullable=False)
@@ -330,8 +331,8 @@ class IPv6(db.Model):
     _resource_fields = {
         "id": fields.Integer,
         "version": fields.Integer,
-        "DS": fields.Integer,
-        "ECN": fields.Integer,
+        "ds": fields.Integer,
+        "ecn": fields.Integer,
         "flow_label": fields.Integer,
         "payload_length": fields.Integer,
         "next_header": fields.Integer,
@@ -349,8 +350,8 @@ class IPv6(db.Model):
             {
                 "id": self.id,
                 "version": self.version,
-                "DS": self.DS,
-                "ECN": self.ECN,
+                "ds": self.ds,
+                "ecn": self.ecn,
                 "flow_label": self.flow_label,
                 "payload_length": self.payload_length,
                 "next_header": self.next_header,
@@ -365,16 +366,16 @@ class IPv6(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            version=data["version"],
-            DS=data["DS"],
-            ECN=data["ECN"],
-            flow_label=data["flow_label"],
-            payload_length=data["payload_length"],
-            next_header=data["next_header"],
-            hop_limit=data["hop_limit"],
-            source_address=data["source_address"],
-            destination_address=data["destination_address"],
-            ext_headers=json.dumps(data["ext_headers"]),
+            version=data["Version"],
+            ds=data["DS"],
+            ecn=data["ECN"],
+            flow_label=data["Flow_Label"],
+            payload_length=data["Payload_Length"],
+            next_header=data["Next_Header"],
+            hop_limit=data["Hop_Limit"],
+            source_address=data["Source_Address"],
+            destination_address=data["Destination_Address"],
+            ext_headers=json.dumps(data["Ext_Headers"]),
             packet=packet,
         )
 
@@ -385,48 +386,48 @@ packet_protocol_mapper._register(IPv6.__name__, IPv6)
 class ARP(db.Model):
     __tablename__ = "arp"
     id = db.Column(db.BigInteger, primary_key=True)
-    HTYPE = db.Column(db.Integer, nullable=False)
-    PTYPE = db.Column(db.Integer, nullable=False)
-    HLEN = db.Column(db.Integer, nullable=False)
-    PLEN = db.Column(db.Integer, nullable=False)
+    htype = db.Column(db.Integer, nullable=False)
+    ptype = db.Column(db.Integer, nullable=False)
+    hlen = db.Column(db.Integer, nullable=False)
+    plen = db.Column(db.Integer, nullable=False)
     operation = db.Column(db.Integer, nullable=False)
-    SHA = db.Column(db.String(30), nullable=False)
-    SPA = db.Column(db.String(30), nullable=False)
-    THA = db.Column(db.String(30), nullable=False)
-    TPA = db.Column(db.String(30), nullable=False)
+    sha = db.Column(db.String(30), nullable=False)
+    spa = db.Column(db.String(30), nullable=False)
+    tha = db.Column(db.String(30), nullable=False)
+    tpa = db.Column(db.String(30), nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("arp", lazy=True))
 
     _resource_fields = {
         "id": fields.Integer,
-        "HTYPE": fields.Integer,
-        "PTYPE": fields.Integer,
-        "HLEN": fields.Integer,
-        "PLEN": fields.Integer,
+        "htype": fields.Integer,
+        "ptype": fields.Integer,
+        "hlen": fields.Integer,
+        "plen": fields.Integer,
         "operation": fields.Integer,
-        "SHA": fields.String,
-        "SPA": fields.String,
-        "THA": fields.String,
-        "TPA": fields.String,
+        "sha": fields.String,
+        "spa": fields.String,
+        "tha": fields.String,
+        "tpa": fields.String,
     }
 
     def __repr__(self):
-        return f"<HTYPE {self.HTYPE}> <PTYPE {self.PTYPE}>"
+        return f"<htype {self.htype}> <PTYPE {self.PTYPE}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "HTYPE": self.HTYPE,
-                "PTYPE": self.PTYPE,
-                "HLEN": self.HLEN,
-                "PLEN": self.PLEN,
+                "htype": self.htype,
+                "ptype": self.ptype,
+                "hlen": self.hlen,
+                "plen": self.plen,
                 "operation": self.operation,
-                "SHA": self.SHA,
-                "SPA": self.SPA,
-                "THA": self.THA,
-                "TPA": self.TPA,
+                "sha": self.sha,
+                "spa": self.spa,
+                "tha": self.tha,
+                "tpa": self.tpa,
             },
             self._resource_fields,
         )
@@ -434,15 +435,15 @@ class ARP(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            HTYPE=data["HTYPE"],
-            PTYPE=data["PTYPE"],
-            HLEN=data["HLEN"],
-            PLEN=data["PLEN"],
-            operation=data["operation"],
-            SHA=data["SHA"],
-            SPA=data["SPA"],
-            THA=data["THA"],
-            TPA=data["TPA"],
+            htype=data["HTYPE"],
+            ptype=data["PTYPE"],
+            hlen=data["HLEN"],
+            plen=data["PLEN"],
+            operation=data["Operation"],
+            sha=data["SHA"],
+            spa=data["SPA"],
+            tha=data["THA"],
+            tpa=data["TPA"],
             packet=packet,
         )
 
@@ -472,7 +473,7 @@ class CDP(db.Model):
         )
 
     @classmethod
-    def from_dict(cls, data, packet):
+    def from_dict(cls, _, packet):
         return cls(
             packet=packet,
         )
@@ -484,24 +485,24 @@ packet_protocol_mapper._register(CDP.__name__, CDP)
 class LLDP(db.Model):
     __tablename__ = "lldp"
     id = db.Column(db.BigInteger, primary_key=True)
-    typelengthvalue = db.Column(db.Text, nullable=False)
+    tlv = db.Column(db.Text, nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("lldp", lazy=True))
 
     _resource_fields = {
         "id": fields.Integer,
-        "typelengthvalue": fields.String,
+        "tlv": fields.String,
     }
 
     def __repr__(self):
-        return f"<typelengthvalue >"
+        return f"<tlv {self.tlv}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "typelengthvalue": self.typelengthvalue,
+                "tlv": self.tlv,
             },
             self._resource_fields,
         )
@@ -509,7 +510,7 @@ class LLDP(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            typelengthvalue=json.dumps(data["typelengthvalue"]),
+            tlv=json.dumps(data["TLV"]),
             packet=packet,
         )
 
@@ -520,8 +521,8 @@ packet_protocol_mapper._register(LLDP.__name__, LLDP)
 class IGMP(db.Model):
     __tablename__ = "igmp"
     id = db.Column(db.BigInteger, primary_key=True)
-    type_ = db.Column(db.Integer, nullable=False)
-    max_resp_time = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.Integer, nullable=False)
+    max_response_time = db.Column(db.Integer, nullable=False)
     checksum = db.Column(db.Integer, nullable=False)
     group_address = db.Column(db.String(40), nullable=False)
 
@@ -531,20 +532,20 @@ class IGMP(db.Model):
     _resource_fields = {
         "id": fields.Integer,
         "type": fields.Integer,
-        "max_resp_time": fields.Integer,
+        "max_response_time": fields.Integer,
         "checksum": fields.Integer,
         "group_address": fields.String,
     }
 
     def __repr__(self):
-        return f"<type {self.type_}> <group address {self.group_address}>"
+        return f"<type {self.type}> <group address {self.group_address}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "type": self.type_,
-                "max_resp_time": self.max_resp_time,
+                "type": self.type,
+                "max_response_time": self.max_response_time,
                 "checksum": self.checksum,
                 "group_address": self.group_address,
             },
@@ -554,10 +555,10 @@ class IGMP(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            type_=data["type_"],
-            max_resp_time=data["max_resp_time"],
-            checksum=data["checksum"],
-            group_address=data["group_address"],
+            type=data["Type"],
+            max_response_time=data["Max_Response_Time"],
+            checksum=data["Checksum"],
+            group_address=data["Group_Address"],
             packet=packet,
         )
 
@@ -568,7 +569,7 @@ packet_protocol_mapper._register(IGMP.__name__, IGMP)
 class ICMPv6(db.Model):
     __tablename__ = "icmpv6"
     id = db.Column(db.BigInteger, primary_key=True)
-    type_ = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
     checksum = db.Column(db.Integer, nullable=False)
     message = db.Column(db.Text, nullable=False)
@@ -585,13 +586,13 @@ class ICMPv6(db.Model):
     }
 
     def __repr__(self):
-        return f"<type {self.type_}> <message {self.message}>"
+        return f"<type {self.type}> <message {self.message}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "type": self.type_,
+                "type": self.type,
                 "code": self.code,
                 "checksum": self.checksum,
                 "message": self.message,
@@ -602,10 +603,10 @@ class ICMPv6(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            type_=data["type_"],
-            code=data["code"],
-            checksum=data["checksum"],
-            message=data["message"],
+            type=data["Type"],
+            code=data["Code"],
+            checksum=data["Checksum"],
+            message=data["Message"],
             packet=packet,
         )
 
@@ -616,7 +617,7 @@ packet_protocol_mapper._register(ICMPv6.__name__, ICMPv6)
 class ICMP(db.Model):
     __tablename__ = "icmp"
     id = db.Column(db.BigInteger, primary_key=True)
-    type_ = db.Column(db.Integer, nullable=False)
+    type = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
     checksum = db.Column(db.Integer, nullable=False)
     message = db.Column(db.Text, nullable=False)
@@ -633,13 +634,13 @@ class ICMP(db.Model):
     }
 
     def __repr__(self):
-        return f"<type {self.type_}> <message {self.message}>"
+        return f"<type {self.type}> <message {self.message}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "type": self.type_,
+                "type": self.type,
                 "code": self.code,
                 "checksum": self.checksum,
                 "message": self.message,
@@ -650,10 +651,10 @@ class ICMP(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            type_=data["type_"],
-            code=data["code"],
-            checksum=data["checksum"],
-            message=data["message"],
+            type=data["Type"],
+            code=data["Code"],
+            checksum=data["Checksum"],
+            message=data["Message"],
             packet=packet,
         )
 
@@ -721,17 +722,17 @@ class TCP(db.Model):
     @classmethod
     def from_dict(cls, data, packet):
         return cls(
-            source_port=data["source_port"],
-            destination_port=data["destination_port"],
-            sequence_number=data["sequence_number"],
-            acknowledgment_number=data["acknowledgment_number"],
-            data_offset=data["data_offset"],
-            reserved=data["reserved"],
-            flags=json.dumps(data["flags"]),
-            window_size=data["window_size"],
-            checksum=data["checksum"],
-            urgent_pointer=data["urgent_pointer"],
-            options=json.dumps(data["options"]),
+            source_port=data["Source_Port"],
+            destination_port=data["Destination_Port"],
+            sequence_number=data["Sequence_Number"],
+            acknowledgment_number=data["Acknowledgment_Number"],
+            data_offset=data["Data_Offset"],
+            reserved=data["Reserved"],
+            flags=json.dumps(data["Flags"]),
+            window_size=data["Window_Size"],
+            checksum=data["Checksum"],
+            urgent_pointer=data["Urgent_Pointer"],
+            options=json.dumps(data["Options"]),
             packet=packet,
         )
 
@@ -777,10 +778,10 @@ class UDP(db.Model):
     def from_dict(cls, data, packet):
 
         return cls(
-            source_port=data["source_port"],
-            destination_port=data["destination_port"],
-            length=data["length"],
-            checksum=data["checksum"],
+            source_port=data["Source_Port"],
+            destination_port=data["Destination_Port"],
+            length=data["Length"],
+            checksum=data["Checksum"],
             packet=packet,
         )
 
@@ -788,7 +789,7 @@ class UDP(db.Model):
 packet_protocol_mapper._register(UDP.__name__, UDP)
 
 
-class LSAP_one(db.Model):
+class LSAP_One(db.Model):
     __tablename__ = "lsap_one"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
@@ -816,36 +817,36 @@ class LSAP_one(db.Model):
     def from_dict(cls, data, packet):
 
         return cls(
-            message=data["message"],
+            message=data["Message"],
             packet=packet,
         )
 
 
-packet_protocol_mapper._register(LSAP_one.__name__, LSAP_one)
+packet_protocol_mapper._register(LSAP_One.__name__, LSAP_One)
 
 
-class SNAP_ext(db.Model):
+class SNAP_Ext(db.Model):
     __tablename__ = "snap_ext"
     id = db.Column(db.BigInteger, primary_key=True)
-    OUI = db.Column(db.Integer, nullable=False)
+    oui = db.Column(db.Integer, nullable=False)
     protocol_id = db.Column(db.Integer, nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("snap_ext", lazy=True))
 
     _resource_fields = {
         "id": fields.Integer,
-        "OUI": fields.Integer,
+        "oui": fields.Integer,
         "protocol_id": fields.Integer,
     }
 
     def __repr__(self):
-        return f"<OUI {self.OUI}> <protocol_id {self.protocol_id}>"
+        return f"<oui {self.oui}> <protocol_id {self.protocol_id}>"
 
     def to_dict(self):
         return marshal(
             {
                 "id": self.id,
-                "OUI": self.OUI,
+                "oui": self.oui,
                 "protocol_id": self.protocol_id,
             },
             self._resource_fields,
@@ -855,21 +856,26 @@ class SNAP_ext(db.Model):
     def from_dict(cls, data, packet):
 
         return cls(
-            OUI=data["OUI"],
-            protocol_id=data["protocol_id"],
+            oui=data["OUI"],
+            protocol_id=data["Protocol_ID"],
             packet=packet,
         )
 
 
-packet_protocol_mapper._register(SNAP_ext.__name__, SNAP_ext)
+packet_protocol_mapper._register(SNAP_Ext.__name__, SNAP_Ext)
 
 
 class Packet(db.Model):
     __tablename__ = "packet"
     id = db.Column(db.BigInteger, primary_key=True)
+    sniffed_timestamp = db.Column(db.Float, nullable=False)
+    processed_timestamp = db.Column(db.Float, nullable=False)
+    submitter_timestamp = db.Column(db.Float, nullable=False)
     _resource_fields = {
         "id": fields.Integer,
     }
+
+    # add time info
 
     def to_dict(self):
         return marshal(
@@ -881,6 +887,15 @@ class Packet(db.Model):
 
     def __repr__(self):
         return f"<id {self.id}>"
+
+    @classmethod
+    def from_dict(cls, data):
+
+        return cls(
+            sniffed_timestamp=data["Sniffed_Timestamp"],
+            processed_timestamp=data["Processed_Timestamp"],
+            submitter_timestamp=data["Submitter_Timestamp"],
+        )
 
 
 packet_protocol_mapper._register(Packet.__name__, Packet)
@@ -894,6 +909,7 @@ def validate_packet(func):
         if not isinstance(data, dict):
             abort(status=400)
         for proto in data.keys():
+
             # the records are lower cased
             if proto.lower() not in packet_protocol_mapper.protocols():
                 abort(status=400)

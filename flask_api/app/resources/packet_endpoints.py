@@ -6,11 +6,15 @@ from functools import lru_cache
 from ..common import db
 from ..models import validate_packet, Packet, packet_protocol_mapper
 
+from typing import Dict
+
 
 def add_new_packet():
     # create class instances of all the present keys
     data = request.get_json()
-    packet = Packet()
+    # def pop info key and
+
+    packet = Packet.from_dict(data["info"])
 
     for proto_name, proto_attrs in data.items():
 
