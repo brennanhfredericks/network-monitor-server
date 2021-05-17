@@ -126,7 +126,7 @@ class AF_Packet(db.Model):
             interface_name=data["Interface_Name"],
             ethernet_protocol_number=data["Ethernet_Protocol_Number"],
             packet_type=data["Packet_Type"],
-            arp_hardware_address_type=data["Arp_Hardware_Address_Type"],
+            arp_hardware_address_type=data["ARP_Hardware_Address_Type"],
             hardware_physical_address=data["Hardware_Physical_Address"],
             packet=packet,
         )
@@ -678,6 +678,7 @@ class TCP(db.Model):
     urgent_pointer = db.Column(db.Integer, nullable=False)
     # issue
     options = db.Column(db.Text, nullable=False)
+    payload_size = db.Column(db.Integer, nullable=False)
 
     packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("tcp", lazy=True))
@@ -695,6 +696,7 @@ class TCP(db.Model):
         "checksum": fields.Integer,
         "urgent_pointer": fields.Integer,
         "options": fields.String,
+        "payload_size": fields.Integer,
     }
 
     def __repr__(self):
@@ -715,6 +717,7 @@ class TCP(db.Model):
                 "checksum": self.checksum,
                 "urgent_pointer": self.urgent_pointer,
                 "options": self.options,
+                "payload_size": self.payload_size,
             },
             self._resource_fields,
         )
@@ -733,6 +736,7 @@ class TCP(db.Model):
             checksum=data["Checksum"],
             urgent_pointer=data["Urgent_Pointer"],
             options=json.dumps(data["Options"]),
+            payload_size=data["Payload_Size"],
             packet=packet,
         )
 
@@ -747,7 +751,7 @@ class UDP(db.Model):
     destination_port = db.Column(db.Integer, nullable=False)
     length = db.Column(db.Integer, nullable=False)
     checksum = db.Column(db.Integer, nullable=False)
-
+    payload_size = db.Column(db.Integer, nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("udp", lazy=True))
 
@@ -757,6 +761,7 @@ class UDP(db.Model):
         "destination_port": fields.Integer,
         "legnth": fields.Integer,
         "checksum": fields.Integer,
+        "payload_size": fields.Integer,
     }
 
     def __repr__(self):
@@ -770,6 +775,7 @@ class UDP(db.Model):
                 "destination_port": self.destination_port,
                 "legnth": self.length,
                 "checksum": self.checksum,
+                "payload_size": self.payload_size,
             },
             self._resource_fields,
         )
@@ -782,6 +788,7 @@ class UDP(db.Model):
             destination_port=data["Destination_Port"],
             length=data["Length"],
             checksum=data["Checksum"],
+            payload_size=data["Payload_Size"],
             packet=packet,
         )
 
