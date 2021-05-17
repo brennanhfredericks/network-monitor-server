@@ -17,7 +17,8 @@ def add_new_packet():
     packet = Packet.from_dict(data["Info"])
 
     for proto_name, proto_attrs in data.items():
-
+        if proto_name == "Info":
+            continue
         # get class object
         cls_obj = packet_protocol_mapper.get_instance(proto_name)
 
