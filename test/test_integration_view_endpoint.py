@@ -45,10 +45,12 @@ def packets_tables_all_view_points():
                 assert len(records) == limit
 
 
-def test_packets_tables_all_view_points():
-    packets_tables_all_view_points()
+# def test_packets_tables_all_view_points():
+#     # packets_tables_all_view_points()
+#     ...
 
 
 if __name__ == "__main__":
 
-    test_packets_tables_all_view_points()
+    # test_packets_tables_all_view_points()
+    ...

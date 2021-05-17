@@ -14,7 +14,7 @@ def add_new_packet():
     data = request.get_json()
     # def pop info key and
 
-    packet = Packet.from_dict(data["info"])
+    packet = Packet.from_dict(data["Info"])
 
     for proto_name, proto_attrs in data.items():
 

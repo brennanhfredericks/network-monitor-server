@@ -28,7 +28,7 @@ def count_packets_in_db():
 
         with conn.cursor() as cursor:
 
-            sql = "SELECT COUNT(id) FROM packet"
+            sql = "SELECT COUNT(id) FROM Packet"
             cursor.execute(sql)
             (res,) = cursor.fetchone()
 
