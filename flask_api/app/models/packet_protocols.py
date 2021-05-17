@@ -19,10 +19,10 @@ class Packet_Protocol_Mapper(object):
         assert isinstance(k, str), "key has to be a str"
         assert issubclass(v, db.Model)
 
-        self.__mapper[k.lower()] = v
+        self.__mapper[k] = v
 
     def get_instance(self, proto):
-        return self.__mapper[proto.lower()]
+        return self.__mapper[proto]
 
     def protocols(self):
         return list(self.__mapper.keys())
@@ -916,9 +916,10 @@ def validate_packet(func):
         if not isinstance(data, dict):
             abort(status=400)
         for proto in data.keys():
-
+            if proto == "Info":
+                continue
             # the records are lower cased
-            if proto.lower() not in packet_protocol_mapper.protocols():
+            if proto not in packet_protocol_mapper.protocols():
                 abort(status=400)
 
         result = func(*args, **kwargs)

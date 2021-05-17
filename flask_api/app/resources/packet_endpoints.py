@@ -62,7 +62,6 @@ def valid_protocol_names():
 
 class Packet_Table_Counts_EP(Resource):
     def get(self, protocol_name):
-        protocol_name = protocol_name.lower()
 
         if protocol_name == "all":
             try:
@@ -104,7 +103,7 @@ class Packet_Table_Views_EP(Resource):
 
         if protoname is None or limit is None:
             abort(status=400, message="missing parameter values cannot be None")
-        protoname = protoname.lower()
+
         limit = min(limit, 100)
         limit = max(5, limit)
 
