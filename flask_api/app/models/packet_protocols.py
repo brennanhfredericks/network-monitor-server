@@ -80,7 +80,7 @@ packet_protocol_mapper._register(Unknown.__name__, Unknown)
 
 
 class AF_Packet(db.Model):
-    __tablename__ = "af_packet"
+    __tablename__ = "AF_Packet"
     id = db.Column(db.BigInteger, primary_key=True)
     interface_name = db.Column(db.String(50), nullable=False)
     ethernet_protocol_number = db.Column(db.Integer, nullable=False)
@@ -136,7 +136,7 @@ packet_protocol_mapper._register(AF_Packet.__name__, AF_Packet)
 
 
 class Packet_802_3(db.Model):
-    __tablename__ = "packet_802_3"
+    __tablename__ = "Packet_802_3"
     id = db.Column(db.BigInteger, primary_key=True)
     destination_mac = db.Column(db.String(50), nullable=False)
     source_mac = db.Column(db.String(50), nullable=False)
@@ -181,7 +181,7 @@ packet_protocol_mapper._register(Packet_802_3.__name__, Packet_802_3)
 
 
 class Packet_802_2(db.Model):
-    __tablename__ = "packet_802_2"
+    __tablename__ = "Packet_802_2"
     id = db.Column(db.BigInteger, primary_key=True)
     dsap = db.Column(db.String(50), nullable=False)
     ssap = db.Column(db.String(50), nullable=False)
@@ -227,7 +227,7 @@ packet_protocol_mapper._register(Packet_802_2.__name__, Packet_802_2)
 
 
 class IPv4(db.Model):
-    __tablename__ = "ipv4"
+    __tablename__ = "IPv4"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
     ihl = db.Column(db.Integer, nullable=False)
@@ -312,7 +312,7 @@ packet_protocol_mapper._register(IPv4.__name__, IPv4)
 
 
 class IPv6(db.Model):
-    __tablename__ = "ipv6"
+    __tablename__ = "IPv6"
     id = db.Column(db.BigInteger, primary_key=True)
     version = db.Column(db.Integer, nullable=False)
     ds = db.Column(db.Integer, nullable=False)
@@ -384,7 +384,7 @@ packet_protocol_mapper._register(IPv6.__name__, IPv6)
 
 
 class ARP(db.Model):
-    __tablename__ = "arp"
+    __tablename__ = "ARP"
     id = db.Column(db.BigInteger, primary_key=True)
     htype = db.Column(db.Integer, nullable=False)
     ptype = db.Column(db.Integer, nullable=False)
@@ -452,7 +452,7 @@ packet_protocol_mapper._register(ARP.__name__, ARP)
 
 
 class CDP(db.Model):
-    __tablename__ = "cdp"
+    __tablename__ = "CDP"
     id = db.Column(db.BigInteger, primary_key=True)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("cdp", lazy=True))
@@ -483,7 +483,7 @@ packet_protocol_mapper._register(CDP.__name__, CDP)
 
 
 class LLDP(db.Model):
-    __tablename__ = "lldp"
+    __tablename__ = "LLDP"
     id = db.Column(db.BigInteger, primary_key=True)
     tlv = db.Column(db.Text, nullable=False)
 
@@ -519,7 +519,7 @@ packet_protocol_mapper._register(LLDP.__name__, LLDP)
 
 
 class IGMP(db.Model):
-    __tablename__ = "igmp"
+    __tablename__ = "IGMP"
     id = db.Column(db.BigInteger, primary_key=True)
     type = db.Column(db.Integer, nullable=False)
     max_response_time = db.Column(db.Integer, nullable=False)
@@ -567,7 +567,7 @@ packet_protocol_mapper._register(IGMP.__name__, IGMP)
 
 
 class ICMPv6(db.Model):
-    __tablename__ = "icmpv6"
+    __tablename__ = "ICMPv6"
     id = db.Column(db.BigInteger, primary_key=True)
     type = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
@@ -615,7 +615,7 @@ packet_protocol_mapper._register(ICMPv6.__name__, ICMPv6)
 
 
 class ICMP(db.Model):
-    __tablename__ = "icmp"
+    __tablename__ = "ICMP"
     id = db.Column(db.BigInteger, primary_key=True)
     type = db.Column(db.Integer, nullable=False)
     code = db.Column(db.Integer, nullable=False)
@@ -663,7 +663,7 @@ packet_protocol_mapper._register(ICMP.__name__, ICMP)
 
 
 class TCP(db.Model):
-    __tablename__ = "tcp"
+    __tablename__ = "TCP"
     id = db.Column(db.BigInteger, primary_key=True)
     source_port = db.Column(db.Integer, nullable=False)
     destination_port = db.Column(db.Integer, nullable=False)
@@ -741,7 +741,7 @@ packet_protocol_mapper._register(TCP.__name__, TCP)
 
 
 class UDP(db.Model):
-    __tablename__ = "udp"
+    __tablename__ = "UDP"
     id = db.Column(db.BigInteger, primary_key=True)
     source_port = db.Column(db.Integer, nullable=False)
     destination_port = db.Column(db.Integer, nullable=False)
@@ -790,7 +790,7 @@ packet_protocol_mapper._register(UDP.__name__, UDP)
 
 
 class LSAP_One(db.Model):
-    __tablename__ = "lsap_one"
+    __tablename__ = "LSAP_One"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
     packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
@@ -826,7 +826,7 @@ packet_protocol_mapper._register(LSAP_One.__name__, LSAP_One)
 
 
 class SNAP_Ext(db.Model):
-    __tablename__ = "snap_ext"
+    __tablename__ = "SNAP_Ext"
     id = db.Column(db.BigInteger, primary_key=True)
     oui = db.Column(db.Integer, nullable=False)
     protocol_id = db.Column(db.Integer, nullable=False)
@@ -866,7 +866,7 @@ packet_protocol_mapper._register(SNAP_Ext.__name__, SNAP_Ext)
 
 
 class Packet(db.Model):
-    __tablename__ = "packet"
+    __tablename__ = "Packet"
     id = db.Column(db.BigInteger, primary_key=True)
     sniffed_timestamp = db.Column(db.Float, nullable=False)
     processed_timestamp = db.Column(db.Float, nullable=False)
