@@ -668,7 +668,7 @@ class TCP(db.Model):
     source_port = db.Column(db.Integer, nullable=False)
     destination_port = db.Column(db.Integer, nullable=False)
     sequence_number = db.Column(db.BigInteger, nullable=False)
-    acknowledgment_number = db.Column(db.BigInteger, nullable=False)
+    acknowledgement_number = db.Column(db.BigInteger, nullable=False)
     data_offset = db.Column(db.Integer, nullable=False)
     reserved = db.Column(db.Integer, nullable=False)
     # issue
@@ -687,7 +687,7 @@ class TCP(db.Model):
         "source_port": fields.Integer,
         "destination_port": fields.Integer,
         "sequence_number": fields.Integer,
-        "acknowledgment_number": fields.Integer,
+        "acknowledgement_number": fields.Integer,
         "data_offset": fields.Integer,
         "reserved": fields.Integer,
         "flags": fields.String,
@@ -707,7 +707,7 @@ class TCP(db.Model):
                 "source_port": self.source_port,
                 "destination_port": self.destination_port,
                 "sequence_number": self.sequence_number,
-                "acknowledgment_number": self.acknowledgment_number,
+                "acknowledgement_number": self.acknowledgement_number,
                 "data_offset": self.data_offset,
                 "reserved": self.reserved,
                 "flags": self.flags,
@@ -725,7 +725,7 @@ class TCP(db.Model):
             source_port=data["Source_Port"],
             destination_port=data["Destination_Port"],
             sequence_number=data["Sequence_Number"],
-            acknowledgment_number=data["Acknowledgment_Number"],
+            acknowledgement_number=data["Acknowledgement_Number"],
             data_offset=data["Data_Offset"],
             reserved=data["Reserved"],
             flags=json.dumps(data["Flags"]),
