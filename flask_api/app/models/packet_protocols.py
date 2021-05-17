@@ -43,7 +43,7 @@ class Unknown(db.Model):
     message = db.Column(db.Text, nullable=False)
     identifier = db.Column(db.Integer, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
 
     packet = db.relationship(
         "Packet", lazy="select", backref=db.backref("unknown", lazy=True)
@@ -87,7 +87,7 @@ class AF_Packet(db.Model):
     packet_type = db.Column(db.String(25), nullable=False)
     arp_hardware_address_type = db.Column(db.Integer, nullable=False)
     hardware_physical_address = db.Column(db.String(50), nullable=False)
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
 
     packet = db.relationship(
         "Packet", lazy="select", backref=db.backref("af_packet", lazy=True)
@@ -142,7 +142,7 @@ class Packet_802_3(db.Model):
     source_mac = db.Column(db.String(50), nullable=False)
     ethertype = db.Column(db.Integer, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
 
     packet = db.relationship("Packet", backref=db.backref("packet_802_3", lazy=True))
 
@@ -187,7 +187,7 @@ class Packet_802_2(db.Model):
     ssap = db.Column(db.String(50), nullable=False)
     control = db.Column(db.String(50), nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
 
     packet = db.relationship("Packet", backref=db.backref("packet_802_2", lazy=True))
 
@@ -244,7 +244,7 @@ class IPv4(db.Model):
     destination_address = db.Column(db.String(40), nullable=False)
 
     options = db.Column(db.Text, nullable=False)
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("ipv4", lazy=True))
 
     _resource_fields = {
@@ -325,7 +325,7 @@ class IPv6(db.Model):
     destination_address = db.Column(db.String(70), nullable=False)
     ext_headers = db.Column(db.Text, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("ipv6", lazy=True))
 
     _resource_fields = {
@@ -396,7 +396,7 @@ class ARP(db.Model):
     tha = db.Column(db.String(30), nullable=False)
     tpa = db.Column(db.String(30), nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("arp", lazy=True))
 
     _resource_fields = {
@@ -454,7 +454,7 @@ packet_protocol_mapper._register(ARP.__name__, ARP)
 class CDP(db.Model):
     __tablename__ = "CDP"
     id = db.Column(db.BigInteger, primary_key=True)
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("cdp", lazy=True))
 
     _resource_fields = {
@@ -487,7 +487,7 @@ class LLDP(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     tlv = db.Column(db.Text, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("lldp", lazy=True))
 
     _resource_fields = {
@@ -526,7 +526,7 @@ class IGMP(db.Model):
     checksum = db.Column(db.Integer, nullable=False)
     group_address = db.Column(db.String(40), nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("igmp", lazy=True))
 
     _resource_fields = {
@@ -574,7 +574,7 @@ class ICMPv6(db.Model):
     checksum = db.Column(db.Integer, nullable=False)
     message = db.Column(db.Text, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("icmpv6", lazy=True))
 
     _resource_fields = {
@@ -622,7 +622,7 @@ class ICMP(db.Model):
     checksum = db.Column(db.Integer, nullable=False)
     message = db.Column(db.Text, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("icmp", lazy=True))
 
     _resource_fields = {
@@ -679,7 +679,7 @@ class TCP(db.Model):
     # issue
     options = db.Column(db.Text, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("tcp", lazy=True))
 
     _resource_fields = {
@@ -748,7 +748,7 @@ class UDP(db.Model):
     length = db.Column(db.Integer, nullable=False)
     checksum = db.Column(db.Integer, nullable=False)
 
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("udp", lazy=True))
 
     _resource_fields = {
@@ -793,7 +793,7 @@ class LSAP_One(db.Model):
     __tablename__ = "LSAP_One"
     id = db.Column(db.BigInteger, primary_key=True)
     message = db.Column(db.Text, nullable=False)
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("lsap_one", lazy=True))
 
     _resource_fields = {
@@ -830,7 +830,7 @@ class SNAP_Ext(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     oui = db.Column(db.Integer, nullable=False)
     protocol_id = db.Column(db.Integer, nullable=False)
-    packet_id = db.Column(db.BigInteger, db.ForeignKey("packet.id"), nullable=False)
+    packet_id = db.Column(db.BigInteger, db.ForeignKey("Packet.id"), nullable=False)
     packet = db.relationship("Packet", backref=db.backref("snap_ext", lazy=True))
 
     _resource_fields = {
