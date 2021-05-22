@@ -142,3 +142,5 @@ flask_api/migrations/*
 flask_api/test_requirements.txt
 flask_api/DockerfileDev
 docker-compose-dev-flask-api.yml
+docker-compose-production.yml
+production_deploy.sh
