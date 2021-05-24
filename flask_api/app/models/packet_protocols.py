@@ -877,7 +877,7 @@ class Packet(db.Model):
     id = db.Column(db.BigInteger, primary_key=True)
     sniffed_timestamp = db.Column(db.Float, nullable=False)
     processed_timestamp = db.Column(db.Float, nullable=False)
-    submitter_timestamp = db.Column(db.Float, nullable=False)
+    submitted_timestamp = db.Column(db.Float, nullable=False)
     _resource_fields = {
         "id": fields.Integer,
     }
@@ -901,7 +901,7 @@ class Packet(db.Model):
         return cls(
             sniffed_timestamp=data["Sniffed_Timestamp"],
             processed_timestamp=data["Processed_Timestamp"],
-            submitter_timestamp=data["Submitter_Timestamp"],
+            submitted_timestamp=data["Submitted_Timestamp"],
         )
 
 
